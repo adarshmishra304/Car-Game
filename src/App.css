@@ -1,0 +1,21 @@
+#root {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  place-items: center;
+  justify-content: center;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle, #2c3e50, #000000);
+  overflow: hidden;
+  font-family: 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
