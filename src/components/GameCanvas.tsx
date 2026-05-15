@@ -148,13 +148,13 @@ const GameCanvas: React.FC = () => {
         if (obstacles2.current.length < 10) spawnObstacle(obstacles2, p2LaneX);
       }
 
-      ctx.fillStyle = '#05130b';
+      ctx.fillStyle = '#2ed573';
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
       const drawRoad = (x: number) => {
         ctx.fillStyle = '#2f3542';
         ctx.fillRect(x, 0, ROAD_WIDTH, CANVAS_HEIGHT);
-        ctx.strokeStyle = '#b1b1b1';
+        ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 4;
         ctx.setLineDash([40, 40]);
         ctx.lineDashOffset = -roadOffset.current;
