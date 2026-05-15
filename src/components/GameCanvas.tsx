@@ -6,7 +6,7 @@ const CANVAS_HEIGHT = 600;
 const ROAD_WIDTH = 400;
 const LANE_COUNT = 3;
 const LANE_WIDTH = ROAD_WIDTH / LANE_COUNT;
-
+var car_gap = 0;
 const GameCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<'start' | 'playing' | 'end'>('start');
@@ -25,14 +25,14 @@ const GameCanvas: React.FC = () => {
   const p2LaneX = React.useMemo(() => {
     const offset = 450;
     return [
-      offset + LANE_WIDTH / 2,
+      offset + LANE_WIDTH / 2 + 25,
       offset + LANE_WIDTH + LANE_WIDTH / 2,
       offset + LANE_WIDTH * 2 + LANE_WIDTH / 2
     ];
   }, []);
 
-  const player1 = useRef(new Car(p1LaneX[1], 500, '#ff4757', 'Red Rocket', 1));
-  const player2 = useRef(new Car(p2LaneX[1], 500, '#2e86de', 'Blue Bolt', 1));
+  const player1 = useRef(new Car(p1LaneX[1], 500, '#ff4757', 'Red ', 1));
+  const player2 = useRef(new Car(p2LaneX[1], 500, '#2e86de', 'Blue ', 1));
   
   const obstacles1 = useRef<Car[]>([]);
   const obstacles2 = useRef<Car[]>([]);
@@ -97,7 +97,7 @@ const GameCanvas: React.FC = () => {
       const currentDist = Math.floor(frameCount.current / 10);
       let count = 1;
       if (currentDist >= 300) {
-        count = Math.random() > 0.5 ? 2 : 1;
+        count = Math.random() > 0.4 ? 2 : 1;
       } else if (currentDist >= 100) {
         count = Math.random() > 0.7 ? 2 : 1;
       }
@@ -116,6 +116,9 @@ const GameCanvas: React.FC = () => {
         const obs = new Car(lanes[lane], -100, color, 'NPC', lane, true);
         obs.targetX = lanes[lane];
         obsList.current.push(obs);
+        if(obsList.current.length>=3){
+          obsList.current.pop();
+        }
       });
     };
 
@@ -123,26 +126,35 @@ const GameCanvas: React.FC = () => {
       if (gameState !== 'playing') return;
 
       frameCount.current++;
-      roadOffset.current = (roadOffset.current + gameSpeed.current) % 100;
-      gameSpeed.current += 0.0003;
+      roadOffset.current = (roadOffset.current + gameSpeed.current) % 1000000000000000000;
+      // difficulty limit
+      if(gameSpeed.current <= 20){
+      gameSpeed.current += 0.001;
+    }
       
       if (frameCount.current % 10 === 0) {
         setDistance(Math.floor(frameCount.current / 10));
       }
-
-      // Wait 45 seconds (2700 frames) before spawning
-      if (frameCount.current > 2700 && frameCount.current % Math.max(30, Math.floor(150 - gameSpeed.current * 4)) === 0) {
+      
+      if(gameSpeed.current <=10)
+        car_gap = gameSpeed.current * 4;
+      else{
+        car_gap = gameSpeed.current * 10;
+      }
+      
+      // Wait 10 seconds (500 frames) before spawning
+      if (frameCount.current > 500 && frameCount.current % Math.max(30, Math.floor(150 - car_gap)) === 0) {
         if (obstacles1.current.length < 10) spawnObstacle(obstacles1, p1LaneX);
         if (obstacles2.current.length < 10) spawnObstacle(obstacles2, p2LaneX);
       }
 
-      ctx.fillStyle = '#2ed573';
+      ctx.fillStyle = '#05130b';
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
       const drawRoad = (x: number) => {
         ctx.fillStyle = '#2f3542';
         ctx.fillRect(x, 0, ROAD_WIDTH, CANVAS_HEIGHT);
-        ctx.strokeStyle = '#ffffff';
+        ctx.strokeStyle = '#b1b1b1';
         ctx.lineWidth = 4;
         ctx.setLineDash([40, 40]);
         ctx.lineDashOffset = -roadOffset.current;
